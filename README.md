@@ -24,6 +24,9 @@ These use cases are bidirectional—useful whether you're an artist protecting y
 - JSON (decision trees)
 - Git/GitHub
 
+## Case Study
+[View full case study →](https://pi-kay.github.io/portfolio/navigator.html)
+
 ## Documentation
 
 This project documents AI-human collaboration transparently:
