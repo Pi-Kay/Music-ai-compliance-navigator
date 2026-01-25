@@ -16,10 +16,9 @@ Interactive tool helping artists, labels, and small music tech companies navigat
 ## Scope (v1.0)
 
 **In scope:**
-- 4 use cases: training data, generated output rights, transparency, artist rights/consent
-- Decision-tree or simple query interface
-- Clear output: "You need X, Y, Z. Here's why."
-- Music AI focus (EU jurisdiction)
+- 4 use cases: consent & attribution, training data provenance, generated output rights, transparency & disclosure
+- Bidirectional framing: serves artists checking for exploitation AND companies building ethically
+- Music AI focus (EU jurisdiction) with transferable structure (medical, engineering, accessibility, creative tech)
 
 **Out of scope (v1.0):**
 - Comprehensive legal tool
