@@ -10,10 +10,12 @@ Input a use case → get requirements, risks, and action steps.
 
 ## Use cases (v1.0)
 
-1. Training data compliance (using existing music to train AI)
-2. Generated output rights (who owns AI-generated music)
-3. Transparency requirements (disclosure obligations)
-4. Artist rights and consent (sampling, voice cloning, likeness)
+1. **Consent & Attribution** — Was this data/voice/work used with permission? What attribution is required?
+2. **Training Data Provenance** — Where did this model's training data come from? How to document/verify?
+3. **Generated Output Rights** — Who owns what I made with AI? Can I sell it? What do I owe?
+4. **Transparency & Disclosure** — When must I say "AI was used"? To whom? How?
+
+These use cases are bidirectional—useful whether you're an artist protecting yourself or a company trying to do right.
 
 ## Tech stack
 
