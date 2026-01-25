@@ -21,7 +21,7 @@
 
 ---
 
-## 2025-01-25: Scope limitation to music AI
+## 2026-01-25: Scope limitation to music AI
 
 **Context:** Could cover general AI compliance or narrow to music/audio.
 
@@ -37,5 +37,27 @@
 - Demonstrates domain expertise to target employers (SoundCloud, ai|coustics, Native Instruments)
 - Narrower scope = higher quality in v1.0
 - Can expand later
+
+**Outcome:** TBD
+
+---
+
+## 2026-01-25: Use case reframing
+
+**Context:** Original use cases drafts by Ai were company-centric. Prompt to serve artists protecting themselves, not just companies seeking compliance.
+
+**Options considered:**
+1. Keep original 4 (company compliance focus)
+2. Reframe as bidirectional (artist protection + ethical company use)
+3. Split into separate artist vs. company tools
+
+**Decision:** Bidirectional framing with 4 revised use cases
+
+**Rationale:**
+- "Consent & Attribution" and "Training Data Provenance" address where harm happens (input side)
+- "Generated Output Rights" answers the practical question every creator has
+- "Transparency & Disclosure" covers regulatory requirements + trust-building
+- Same tool serves individual musicians, sound artists, startups, and target companies (SoundCloud, ai|coustics)
+- Structure transfers to adjacent fields: medical AI consent, engineering traceability, accessibility voice banking
 
 **Outcome:** TBD
