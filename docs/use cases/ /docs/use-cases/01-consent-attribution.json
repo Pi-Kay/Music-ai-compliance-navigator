@@ -1,0 +1,861 @@
+{
+  "id": "consent-attribution",
+  "version": "1.0",
+  "title": "Consent & Attribution",
+  "description": "Check if consent was given or is required, and what attribution obligations exist.",
+  "entry": "q1",
+  "questions": {
+    "q1": {
+      "text": "What's your situation?",
+      "type": "checkbox",
+      "options": [
+        {
+          "id": "my-work-used",
+          "label": "My work may have been used without permission",
+          "next": "q2a"
+        },
+        {
+          "id": "use-others-work",
+          "label": "I want to use someone else's work",
+          "next": "q2b"
+        },
+        {
+          "id": "building-tool",
+          "label": "I'm building a tool/product that uses others' work",
+          "next": "q2c"
+        },
+        {
+          "id": "other",
+          "label": "Something else",
+          "next": "edge-case",
+          "log": true,
+          "textInput": true
+        }
+      ]
+    },
+    "q2a": {
+      "text": "What type of work?",
+      "type": "checkbox",
+      "context": "my-work-used",
+      "options": [
+        {
+          "id": "sound-recording",
+          "label": "Sound recording (released track, stems, samples)",
+          "next": "q3a"
+        },
+        {
+          "id": "voice",
+          "label": "Voice / vocal performance",
+          "next": "q3a"
+        },
+        {
+          "id": "composition",
+          "label": "Composition / melody / lyrics",
+          "next": "q3a"
+        },
+        {
+          "id": "other",
+          "label": "Something else",
+          "next": "edge-case",
+          "log": true,
+          "textInput": true
+        }
+      ]
+    },
+    "q3a": {
+      "text": "What do you know?",
+      "type": "checkbox",
+      "context": "my-work-used",
+      "options": [
+        {
+          "id": "found-in-dataset",
+          "label": "I found my work in a known dataset",
+          "next": "output-a1"
+        },
+        {
+          "id": "suspected",
+          "label": "I suspect it was used but have no proof",
+          "next": "output-a2"
+        },
+        {
+          "id": "ai-sounds-like-mine",
+          "label": "An AI output sounds like my work",
+          "next": "output-a3"
+        },
+        {
+          "id": "not-sure",
+          "label": "Not sure where to start",
+          "next": "output-a4"
+        },
+        {
+          "id": "none-fit",
+          "label": "None of these fit",
+          "next": "edge-case",
+          "log": true,
+          "textInput": true
+        }
+      ]
+    },
+    "q2b": {
+      "text": "What do you want to use?",
+      "type": "checkbox",
+      "context": "use-others-work",
+      "options": [
+        {
+          "id": "voice-likeness",
+          "label": "Voice / likeness of a real person",
+          "next": "q3b-voice"
+        },
+        {
+          "id": "sound-recording",
+          "label": "Sound recording / sample",
+          "next": "q3b-recording"
+        },
+        {
+          "id": "composition",
+          "label": "Composition / melody",
+          "next": "q3b-composition"
+        },
+        {
+          "id": "other",
+          "label": "Something else",
+          "next": "edge-case",
+          "log": true,
+          "textInput": true
+        }
+      ]
+    },
+    "q3b-voice": {
+      "text": "What's the context?",
+      "type": "checkbox",
+      "context": "use-others-work/voice",
+      "options": [
+        {
+          "id": "real-identifiable",
+          "label": "Real person, identifiable voice",
+          "next": "output-b-voice-1"
+        },
+        {
+          "id": "synthetic-real",
+          "label": "Synthetic voice trained on real person",
+          "next": "output-b-voice-2"
+        },
+        {
+          "id": "fully-synthetic",
+          "label": "Fully synthetic, no real person reference",
+          "next": "output-b-voice-3"
+        },
+        {
+          "id": "not-sure",
+          "label": "Not sure",
+          "next": "edge-case",
+          "log": true
+        }
+      ]
+    },
+    "q3b-recording": {
+      "text": "What's the context?",
+      "type": "checkbox",
+      "context": "use-others-work/recording",
+      "options": [
+        {
+          "id": "sample-released",
+          "label": "Sample from released track",
+          "next": "output-b-recording-1"
+        },
+        {
+          "id": "stem",
+          "label": "Stem/multitrack from released track",
+          "next": "output-b-recording-2"
+        },
+        {
+          "id": "sample-library",
+          "label": "Sound from sample library",
+          "next": "output-b-recording-3"
+        },
+        {
+          "id": "ai-generated",
+          "label": "AI-generated sound trained on existing recordings",
+          "next": "output-b-recording-4"
+        },
+        {
+          "id": "not-sure",
+          "label": "Not sure",
+          "next": "edge-case",
+          "log": true
+        }
+      ]
+    },
+    "q3b-composition": {
+      "text": "What's the context?",
+      "type": "checkbox",
+      "context": "use-others-work/composition",
+      "options": [
+        {
+          "id": "melody-hook",
+          "label": "Melody or hook from existing song",
+          "next": "output-b-comp-1"
+        },
+        {
+          "id": "chord-progression",
+          "label": "Chord progression",
+          "next": "output-b-comp-2"
+        },
+        {
+          "id": "lyrics",
+          "label": "Lyrics",
+          "next": "output-b-comp-3"
+        },
+        {
+          "id": "ai-generated",
+          "label": "AI-generated composition",
+          "next": "output-b-comp-4"
+        },
+        {
+          "id": "not-sure",
+          "label": "Not sure",
+          "next": "edge-case",
+          "log": true
+        }
+      ]
+    },
+    "q2c": {
+      "text": "What's your role?",
+      "type": "checkbox",
+      "context": "building-tool",
+      "options": [
+        {
+          "id": "training-model",
+          "label": "Training a model on audio/music data",
+          "next": "q3c-training"
+        },
+        {
+          "id": "using-pretrained",
+          "label": "Using a pre-trained model in my product",
+          "next": "output-c-pretrained"
+        },
+        {
+          "id": "building-platform",
+          "label": "Building a platform where users upload/generate content",
+          "next": "output-c-platform"
+        },
+        {
+          "id": "other",
+          "label": "Something else",
+          "next": "edge-case",
+          "log": true,
+          "textInput": true
+        }
+      ]
+    },
+    "q3c-training": {
+      "text": "Data source?",
+      "type": "checkbox",
+      "context": "building-tool/training",
+      "options": [
+        {
+          "id": "licensed",
+          "label": "Licensed dataset (documented consent)",
+          "next": "output-c-training-1"
+        },
+        {
+          "id": "scraped",
+          "label": "Scraped from public internet",
+          "next": "output-c-training-2"
+        },
+        {
+          "id": "user-uploaded",
+          "label": "User-uploaded content",
+          "next": "output-c-training-3"
+        },
+        {
+          "id": "mixed",
+          "label": "Mix of sources",
+          "next": "output-c-training-4"
+        },
+        {
+          "id": "not-sure",
+          "label": "Not sure",
+          "next": "edge-case",
+          "log": true
+        }
+      ]
+    }
+  },
+  "outputs": {
+    "output-a1": {
+      "title": "Found in Dataset",
+      "context": "Your work was found in a known training dataset",
+      "requirements": [
+        "Document evidence (screenshots, dataset name, URL)",
+        "Check if you gave consent (platform ToS, distribution agreements)",
+        "Review any contracts with distributors for AI/ML clauses"
+      ],
+      "risks": [
+        "Your consent may have been buried in ToS you agreed to",
+        "Removal may not be possible if model already trained"
+      ],
+      "actions": [
+        "File GDPR data subject access request (EU) to demand information",
+        "Request removal under GDPR Article 17 (right to erasure)",
+        "Contact dataset maintainer directly",
+        "Consider legal consultation if commercial harm"
+      ],
+      "sources": [
+        {
+          "title": "GDPR Article 15",
+          "description": "Right of access",
+          "url": "https://gdpr-info.eu/art-15-gdpr/"
+        },
+        {
+          "title": "GDPR Article 17",
+          "description": "Right to erasure",
+          "url": "https://gdpr-info.eu/art-17-gdpr/"
+        },
+        {
+          "title": "Have I Been Trained",
+          "description": "Search for your work in AI datasets",
+          "url": "https://haveibeentrained.com"
+        }
+      ]
+    },
+    "output-a2": {
+      "title": "Suspected Use",
+      "context": "You suspect your work was used but have no proof",
+      "requirements": [
+        "Gather evidence before making claims"
+      ],
+      "risks": [
+        "Difficult to prove without dataset access",
+        "AI companies often don't disclose training data"
+      ],
+      "actions": [
+        "Search Have I Been Trained (haveibeentrained.com)",
+        "Check Spawning.ai for opt-out tools",
+        "Review your distributor's AI policy (DistroKid, TuneCore, etc.)",
+        "Document timeline of your releases vs. model training dates",
+        "File GDPR access request to AI company directly"
+      ],
+      "sources": [
+        {
+          "title": "Have I Been Trained",
+          "url": "https://haveibeentrained.com"
+        },
+        {
+          "title": "Spawning.ai",
+          "url": "https://spawning.ai"
+        },
+        {
+          "title": "EU AI Act Article 53",
+          "description": "Transparency requirements for training data"
+        }
+      ]
+    },
+    "output-a3": {
+      "title": "AI Output Sounds Like Your Work",
+      "context": "An AI-generated output resembles your work",
+      "requirements": [
+        "Understand the difference between training data issues and output similarity"
+      ],
+      "risks": [
+        "Similarity alone doesn't prove your work was in training data",
+        "Copyright infringement claims for AI output are legally untested",
+        "Burden of proof is on you"
+      ],
+      "actions": [
+        "Document the AI output (save file, note date, tool used)",
+        "Compare side-by-side with your original",
+        "Determine: is this a copyright claim (output) or training data issue (input)?",
+        "For copyright: consult IP lawyer",
+        "For training data: follow suspected use path"
+      ],
+      "sources": [
+        {
+          "title": "US Copyright Office",
+          "description": "Guidance on AI and copyright"
+        },
+        {
+          "title": "EU AI Act",
+          "description": "Transparency requirements"
+        }
+      ]
+    },
+    "output-a4": {
+      "title": "Getting Started",
+      "context": "Not sure where to begin checking",
+      "requirements": [],
+      "risks": [
+        "Your work may have been included via distributor agreements",
+        "Opt-out may not be retroactive"
+      ],
+      "actions": [
+        "Start with Have I Been Trained (haveibeentrained.com)",
+        "Check your distributor's AI/ML policy",
+        "Review any contracts for AI training clauses",
+        "Register with Spawning.ai to set preferences for future use",
+        "Consider adding AI training opt-out to your metadata"
+      ],
+      "sources": [
+        {
+          "title": "Have I Been Trained",
+          "url": "https://haveibeentrained.com"
+        },
+        {
+          "title": "Spawning.ai",
+          "url": "https://spawning.ai"
+        }
+      ]
+    },
+    "output-b-voice-1": {
+      "title": "Using Real, Identifiable Voice",
+      "context": "You want to use a real person's identifiable voice",
+      "requirements": [
+        "Explicit written consent required",
+        "Consent must be specific to your use case",
+        "Attribution likely required (check agreement)"
+      ],
+      "risks": [
+        "Right of publicity laws vary by jurisdiction",
+        "High risk if used commercially without consent",
+        "Consent for one use doesn't cover other uses"
+      ],
+      "actions": [
+        "Obtain written consent specifying: scope, duration, territory, compensation",
+        "Include AI/synthetic use explicitly in consent",
+        "Document the consent chain",
+        "Check platform policies (streaming services may have additional rules)"
+      ],
+      "sources": [
+        {
+          "title": "EU Personality Rights",
+          "description": "Varies by member state"
+        },
+        {
+          "title": "US Right of Publicity",
+          "description": "State-level laws (CA, TN, NY most relevant)"
+        }
+      ]
+    },
+    "output-b-voice-2": {
+      "title": "Using Synthetic Voice Trained on Real Person",
+      "context": "Using AI-generated voice based on a real person",
+      "requirements": [
+        "Same consent obligations as real voice",
+        "Disclosure required under EU AI Act Article 52",
+        "Original person's rights still apply"
+      ],
+      "risks": [
+        "Deepfake regulations are tightening globally",
+        "Platform ToS may prohibit synthetic voices",
+        "Reputational risk even if technically legal"
+      ],
+      "actions": [
+        "Obtain consent from the original person",
+        "Disclose synthetic nature in your content",
+        "Check AI tool's ToS for restrictions",
+        "Check distribution platform policies",
+        "Document your consent and disclosure chain"
+      ],
+      "sources": [
+        {
+          "title": "EU AI Act Article 52",
+          "description": "Transparency for synthetic media"
+        },
+        {
+          "title": "GDPR Article 9",
+          "description": "Biometric data as special category"
+        }
+      ]
+    },
+    "output-b-voice-3": {
+      "title": "Using Fully Synthetic Voice",
+      "context": "Using AI voice with no real person reference",
+      "requirements": [
+        "Check AI tool's license terms",
+        "Disclosure may still be required for some platforms"
+      ],
+      "risks": [
+        "AI tool may claim ownership/royalties",
+        "Some platforms require AI disclosure regardless",
+        "Lower legal risk but not zero"
+      ],
+      "actions": [
+        "Review AI tool's ToS for ownership and usage rights",
+        "Check if attribution to AI tool is required",
+        "Check distribution platform policies on AI-generated content",
+        "Consider voluntary disclosure for trust"
+      ],
+      "sources": [
+        {
+          "title": "AI Tool ToS",
+          "description": "Varies by provider"
+        }
+      ]
+    },
+    "output-b-recording-1": {
+      "title": "Sampling Released Track",
+      "context": "Using a sample from a commercially released recording",
+      "requirements": [
+        "Master rights clearance (from label)",
+        "Publishing rights clearance (from publisher)",
+        "Both are required"
+      ],
+      "risks": [
+        "No fair use assumption for music sampling in most jurisdictions",
+        "Uncleared samples can result in lawsuits, takedowns, profit seizure",
+        "Even short samples can be infringing"
+      ],
+      "actions": [
+        "Identify rights holders (label for master, publisher for composition)",
+        "Contact for clearance before release",
+        "Negotiate terms: fee, royalty split, credit",
+        "Get clearance in writing",
+        "Consider re-recording to avoid master clearance (still need publishing)"
+      ],
+      "sources": [
+        {
+          "title": "Copyright law",
+          "description": "Jurisdiction-specific"
+        }
+      ]
+    },
+    "output-b-recording-2": {
+      "title": "Using Stems/Multitracks",
+      "context": "Using stems or multitrack files from a released recording",
+      "requirements": [
+        "Same clearance as full sample",
+        "Stems don't have separate/lesser rights"
+      ],
+      "risks": [
+        "Common misconception that stems are freer to use",
+        "Same legal risk as sampling the master"
+      ],
+      "actions": [
+        "Follow same process as sampling released track",
+        "Contact label and publisher for clearance"
+      ],
+      "sources": []
+    },
+    "output-b-recording-3": {
+      "title": "Using Sample Library Sounds",
+      "context": "Using sounds from a sample library",
+      "requirements": [
+        "Check license type carefully",
+        "Many libraries now have AI-specific clauses"
+      ],
+      "risks": [
+        "License may not cover AI training or AI-assisted production",
+        "Some licenses require attribution",
+        "Royalty-free ≠ rights-free"
+      ],
+      "actions": [
+        "Read the full license agreement",
+        "Check for AI/ML exclusions",
+        "Check attribution requirements",
+        "Keep proof of license",
+        "When in doubt, contact the library"
+      ],
+      "sources": [
+        {
+          "title": "Sample library ToS",
+          "description": "Varies by provider"
+        }
+      ]
+    },
+    "output-b-recording-4": {
+      "title": "Using AI-Generated Sound",
+      "context": "Using AI-generated audio trained on existing recordings",
+      "requirements": [
+        "Understand you inherit the training data's legal ambiguity"
+      ],
+      "risks": [
+        "If AI trained on unlicensed data, your output may be legally risky",
+        "Provenance often unclear",
+        "Legal landscape is evolving"
+      ],
+      "actions": [
+        "Check AI tool's documentation on training data",
+        "Look for model cards or provenance statements",
+        "Consider 'ethical AI' alternatives with documented consent",
+        "Disclose AI use in your credits",
+        "Monitor legal developments"
+      ],
+      "sources": [
+        {
+          "title": "AI tool documentation",
+          "description": "Model cards, training data statements"
+        }
+      ]
+    },
+    "output-b-comp-1": {
+      "title": "Using Melody or Hook",
+      "context": "Using a melody or hook from an existing song",
+      "requirements": [
+        "Publishing rights clearance required",
+        "Melody is protected by copyright"
+      ],
+      "risks": [
+        "Melody is one of the most protected elements",
+        "Even similar melodies can trigger infringement claims"
+      ],
+      "actions": [
+        "Contact publisher for clearance",
+        "Consider writing original melody instead",
+        "If inspired by, ensure it's sufficiently different"
+      ],
+      "sources": []
+    },
+    "output-b-comp-2": {
+      "title": "Using Chord Progression",
+      "context": "Using a chord progression from an existing song",
+      "requirements": [
+        "Generally not protected by copyright"
+      ],
+      "risks": [
+        "Low legal risk for chord progressions alone",
+        "Risk increases if combined with similar melody, rhythm, or arrangement"
+      ],
+      "actions": [
+        "Chord progressions alone are typically safe",
+        "Avoid combining with other similar elements",
+        "Document your creative process"
+      ],
+      "sources": []
+    },
+    "output-b-comp-3": {
+      "title": "Using Lyrics",
+      "context": "Using lyrics from an existing song",
+      "requirements": [
+        "Publishing rights clearance required",
+        "Lyrics are protected by copyright"
+      ],
+      "risks": [
+        "Even short phrases can be protected if distinctive",
+        "Quoting lyrics without clearance is infringement"
+      ],
+      "actions": [
+        "Contact publisher for clearance",
+        "Write original lyrics",
+        "If quoting, ensure you have permission or it qualifies as fair use (rare for music)"
+      ],
+      "sources": []
+    },
+    "output-b-comp-4": {
+      "title": "Using AI-Generated Composition",
+      "context": "Using composition generated by AI",
+      "requirements": [
+        "Check AI tool's ownership terms",
+        "Understand training data provenance"
+      ],
+      "risks": [
+        "Ownership of AI-generated compositions is legally unclear",
+        "Some jurisdictions require human authorship for copyright",
+        "Training data may include copyrighted compositions"
+      ],
+      "actions": [
+        "Review AI tool's ToS for ownership claims",
+        "Check if tool discloses training data sources",
+        "Add human creative input to strengthen your claim",
+        "Document your creative process",
+        "Consider voluntary disclosure"
+      ],
+      "sources": [
+        {
+          "title": "US Copyright Office",
+          "description": "Human authorship requirement"
+        }
+      ]
+    },
+    "output-c-pretrained": {
+      "title": "Using Pre-trained Model",
+      "context": "Integrating a pre-trained AI model in your product",
+      "requirements": [
+        "Review model's license terms",
+        "Understand training data provenance",
+        "Check for usage restrictions"
+      ],
+      "risks": [
+        "You may inherit legal risk from training data",
+        "License may restrict commercial use",
+        "Provenance often unclear"
+      ],
+      "actions": [
+        "Read model license carefully",
+        "Check for model card or training data documentation",
+        "Assess if training data had proper consent",
+        "Consider indemnification if licensing from vendor",
+        "Document your due diligence"
+      ],
+      "sources": [
+        {
+          "title": "Model cards",
+          "description": "Standard documentation for AI models"
+        }
+      ]
+    },
+    "output-c-platform": {
+      "title": "Building a Platform",
+      "context": "Building a platform where users upload or generate content",
+      "requirements": [
+        "Clear ToS covering AI training use",
+        "User consent mechanisms",
+        "DMCA/takedown procedures"
+      ],
+      "risks": [
+        "Liability for user-uploaded infringing content",
+        "GDPR compliance for EU users",
+        "Evolving regulations"
+      ],
+      "actions": [
+        "Draft ToS that explicitly addresses AI training",
+        "Implement clear consent flows",
+        "Provide opt-out mechanism for AI training",
+        "Set up DMCA/takedown process",
+        "Consider content moderation for synthetic media",
+        "Consult legal counsel"
+      ],
+      "sources": [
+        {
+          "title": "GDPR Articles 6, 7",
+          "description": "Lawful basis, consent"
+        },
+        {
+          "title": "EU AI Act",
+          "description": "Platform obligations"
+        },
+        {
+          "title": "DMCA",
+          "description": "Safe harbor provisions"
+        }
+      ]
+    },
+    "output-c-training-1": {
+      "title": "Training on Licensed Dataset",
+      "context": "Using properly licensed data for training",
+      "requirements": [
+        "Verify license covers AI/ML training",
+        "Maintain documentation"
+      ],
+      "risks": [
+        "Older licenses may not cover AI training",
+        "License may have restrictions on output use"
+      ],
+      "actions": [
+        "Document the license and keep records",
+        "Verify license explicitly covers AI/ML training use",
+        "Check for output restrictions",
+        "Be prepared to prove provenance if challenged",
+        "Consider transparency statement in your documentation"
+      ],
+      "sources": []
+    },
+    "output-c-training-2": {
+      "title": "Training on Scraped Data",
+      "context": "Using data scraped from the public internet",
+      "requirements": [
+        "Opt-out mechanisms required under EU AI Act",
+        "robots.txt compliance"
+      ],
+      "risks": [
+        "High legal risk in EU (GDPR, EU AI Act)",
+        "Public ≠ free to use for training",
+        "Class action lawsuits emerging"
+      ],
+      "actions": [
+        "Implement and respect opt-out mechanisms",
+        "Check robots.txt and ToS of source sites",
+        "Consider switching to licensed data",
+        "Document your data sources",
+        "Monitor regulatory developments",
+        "Consult legal counsel"
+      ],
+      "sources": [
+        {
+          "title": "EU AI Act Article 53",
+          "description": "Training data transparency"
+        },
+        {
+          "title": "GDPR",
+          "description": "Data subject rights"
+        }
+      ]
+    },
+    "output-c-training-3": {
+      "title": "Training on User-Uploaded Content",
+      "context": "Using content uploaded by your users for training",
+      "requirements": [
+        "Explicit consent in ToS",
+        "Clear disclosure to users",
+        "GDPR compliance"
+      ],
+      "risks": [
+        "Users may not understand what they're consenting to",
+        "GDPR data subject rights apply",
+        "Reputational risk if perceived as exploitative"
+      ],
+      "actions": [
+        "Update ToS to explicitly cover AI training",
+        "Implement clear, informed consent flow",
+        "Consider opt-in vs opt-out (opt-in is safer)",
+        "Provide mechanism to withdraw consent",
+        "Be transparent about how data is used",
+        "Consider revenue sharing or other value exchange"
+      ],
+      "sources": [
+        {
+          "title": "GDPR Articles 6, 7",
+          "description": "Lawful basis, consent"
+        }
+      ]
+    },
+    "output-c-training-4": {
+      "title": "Training on Mixed Sources",
+      "context": "Using a combination of data sources for training",
+      "requirements": [
+        "Document each source separately",
+        "Comply with most restrictive requirements"
+      ],
+      "risks": [
+        "Weakest link determines overall risk",
+        "Harder to prove provenance",
+        "Contamination from unlicensed data"
+      ],
+      "actions": [
+        "Audit and document all data sources",
+        "Assess each source's license/consent status",
+        "Remove or replace high-risk sources",
+        "Consider data auditing tools",
+        "Prepare provenance documentation",
+        "Consult legal counsel"
+      ],
+      "sources": []
+    }
+  },
+  "edgeCase": {
+    "id": "edge-case",
+    "title": "Edge Case Logged",
+    "message": "Thanks for your input. Your situation has been logged and will help us expand the Navigator.",
+    "fields": [
+      {
+        "id": "path",
+        "type": "auto",
+        "description": "Questions answered so far"
+      },
+      {
+        "id": "timestamp",
+        "type": "auto"
+      },
+      {
+        "id": "userInput",
+        "type": "text",
+        "label": "Describe your situation"
+      },
+      {
+        "id": "contact",
+        "type": "email",
+        "label": "Email (optional, for follow-up)",
+        "required": false
+      }
+    ]
+  }
+}
