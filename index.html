@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music AI Compliance Navigator</title>
+  <meta name="description" content="Navigate AI compliance for music — consent, training data, output rights, and disclosure requirements.">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --white: #fafafa;
+      --grey-50: #f7f7f7;
+      --grey-100: #f0f0f0;
+      --grey-200: #e0e0e0;
+      --grey-300: #cccccc;
+      --grey-400: #999999;
+      --grey-500: #666666;
+      --grey-600: #333333;
+      --navy: #0d1b2a;
+      --navy-light: #1b3a5a;
+      --amber: #c9a227;
+      --amber-dark: #a68819;
+    }
+    
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: var(--white);
+      color: var(--grey-600);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    #root { min-height: 100vh; }
+    
+    .app { min-height: 100vh; display: flex; flex-direction: column; background: var(--white); }
+    .main { flex: 1; padding: 2rem 1rem 4rem; }
+    .container { max-width: 720px; margin: 0 auto; }
+    
+    .header { border-bottom: 1px solid var(--navy); padding: 1.5rem 1rem; background: var(--white); }
+    .header-content { max-width: 720px; margin: 0 auto; }
+    .header-title { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+    .header-icon { font-size: 1.5rem; color: var(--navy); }
+    .header h1 { font-size: 1.25rem; font-weight: 500; color: var(--navy); letter-spacing: -0.01em; }
+    .header-subtitle { margin-top: 0.25rem; font-size: 0.875rem; color: var(--grey-500); }
+    
+    .use-case-selector h2 { font-size: 1rem; font-weight: 500; color: var(--grey-500); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .use-case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    @media (max-width: 600px) { .use-case-grid { grid-template-columns: 1fr; } }
+    
+    .use-case-card { background: var(--white); border: 1px solid var(--grey-200); border-radius: 2px; padding: 1.5rem; text-align: left; cursor: pointer; transition: all 0.15s ease; font-family: inherit; }
+    .use-case-card:hover { border-color: var(--navy); background: var(--grey-50); }
+    .use-case-icon { display: block; font-size: 1.5rem; color: var(--navy); margin-bottom: 0.75rem; }
+    .use-case-card h3 { font-size: 1rem; font-weight: 500; color: var(--grey-600); margin-bottom: 0.5rem; }
+    .use-case-card p { font-size: 0.875rem; color: var(--grey-500); line-height: 1.5; }
+    
+    .breadcrumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-size: 0.875rem; }
+    .breadcrumb-item { background: none; border: none; color: var(--grey-400); cursor: pointer; padding: 0; font-size: inherit; font-family: inherit; }
+    .breadcrumb-item:hover { color: var(--navy); }
+    .breadcrumb-item.active { color: var(--grey-600); }
+    .breadcrumb-item.current { color: var(--amber-dark); }
+    .breadcrumb-separator { color: var(--grey-300); }
+    
+    .question { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .question-text { font-size: 1.5rem; font-weight: 500; color: var(--grey-600); margin-bottom: 2rem; line-height: 1.3; }
+    .options { display: flex; flex-direction: column; gap: 0.5rem; }
+    
+    .option-button { display: flex; align-items: center; gap: 1rem; width: 100%; padding: 1rem 1.25rem; background: var(--white); border: 1px solid var(--grey-200); border-radius: 2px; text-align: left; cursor: pointer; transition: all 0.15s ease; font-family: inherit; font-size: 1rem; }
+    .option-button:hover { border-color: var(--navy); background: var(--grey-50); }
+    .option-marker { color: var(--grey-300); font-size: 0.75rem; }
+    .option-button:hover .option-marker { color: var(--amber); }
+    .option-label { flex: 1; font-size: 1rem; color: var(--grey-600); }
+    .option-arrow { color: var(--grey-300); transition: transform 0.15s ease; }
+    .option-button:hover .option-arrow { transform: translateX(4px); color: var(--navy); }
+    
+    .output { animation: fadeIn 0.2s ease; }
+    .output-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--grey-200); }
+    .output-title { font-size: 1.5rem; font-weight: 500; color: var(--grey-600); margin-bottom: 0.5rem; }
+    .output-context { font-size: 1rem; color: var(--grey-500); }
+    .output-sections { margin-bottom: 2rem; }
+    .output-section { margin-bottom: 1.5rem; }
+    .section-heading { font-size: 0.875rem; font-weight: 500; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+    .section-items { list-style: none; padding: 0; }
+    .section-items li { position: relative; padding-left: 1.25rem; margin-bottom: 0.5rem; font-size: 1rem; color: var(--grey-600); line-height: 1.5; }
+    .section-items li::before { content: "—"; position: absolute; left: 0; color: var(--grey-300); }
+    
+    .output-sources { padding: 1.5rem; background: var(--grey-50); border: 1px solid var(--grey-200); border-radius: 2px; margin-bottom: 2rem; }
+    .sources-list { list-style: none; padding: 0; }
+    .sources-list li { margin-bottom: 0.5rem; font-size: 0.875rem; }
+    .sources-list a { color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--amber); }
+    .sources-list a:hover { color: var(--amber-dark); }
+    
+    .output-actions { display: flex; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--grey-200); }
+    
+    .btn-primary, .btn-secondary { padding: 0.75rem 1.5rem; font-size: 0.875rem; font-weight: 500; border-radius: 2px; cursor: pointer; transition: all 0.15s ease; font-family: inherit; }
+    .btn-primary { background: var(--navy); color: var(--white); border: 1px solid var(--navy); }
+    .btn-primary:hover { background: var(--navy-light); }
+    .btn-primary:disabled { background: var(--grey-300); border-color: var(--grey-300); cursor: not-allowed; }
+    .btn-secondary { background: var(--white); color: var(--grey-600); border: 1px solid var(--grey-200); }
+    .btn-secondary:hover { border-color: var(--grey-400); }
+    
+    .edge-case { animation: fadeIn 0.2s ease; }
+    .edge-case h2 { font-size: 1.5rem; font-weight: 500; color: var(--grey-600); margin-bottom: 0.5rem; }
+    .edge-case > p { color: var(--grey-500); margin-bottom: 1.5rem; }
+    .edge-case-input { width: 100%; min-height: 120px; padding: 1rem; font-size: 1rem; font-family: inherit; border: 1px solid var(--grey-200); border-radius: 2px; resize: vertical; margin-bottom: 1.5rem; }
+    .edge-case-input:focus { outline: none; border-color: var(--navy); }
+    .edge-case-thanks { text-align: center; padding: 3rem 1rem; }
+    .edge-icon { display: inline-block; width: 48px; height: 48px; line-height: 48px; background: var(--amber); color: var(--white); border-radius: 50%; font-size: 1.5rem; margin-bottom: 1rem; }
+    .edge-case-thanks p { color: var(--grey-500); }
+    
+    .footer { border-top: 1px solid var(--grey-200); padding: 1.5rem 1rem; background: var(--grey-50); }
+    .footer-content { max-width: 720px; margin: 0 auto; text-align: center; }
+    .footer a { color: var(--grey-500); text-decoration: none; }
+    .footer a:hover { color: var(--navy); }
+    .footer-sep { margin: 0 0.5rem; color: var(--grey-300); }
+    .footer-disclaimer { margin-top: 0.5rem; font-size: 0.75rem; color: var(--grey-400); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <script type="text/babel">
+    const { useState } = React;
+
+    const useCases = {
+      "consent-attribution": {
+        id: "consent-attribution",
+        title: "Consent & Attribution",
+        description: "Check if consent was given or is required, and what attribution obligations exist.",
+        icon: "§",
+        entry: "q1",
+        questions: {
+          q1: { text: "What's your situation?", options: [
+            { id: "my-work-used", label: "My work may have been used without permission", next: "q2a" },
+            { id: "use-others-work", label: "I want to use someone else's work", next: "q2b" },
+            { id: "building-tool", label: "I'm building a tool/product that uses others' work", next: "q2c" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2a: { text: "What type of work?", options: [
+            { id: "sound-recording", label: "Sound recording (released track, stems, samples)", next: "q3a" },
+            { id: "voice", label: "Voice / vocal performance", next: "q3a" },
+            { id: "composition", label: "Composition / melody / lyrics", next: "q3a" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q3a: { text: "What do you know?", options: [
+            { id: "found-in-dataset", label: "I found my work in a known dataset", next: "output-a1" },
+            { id: "suspected", label: "I suspect it was used but have no proof", next: "output-a2" },
+            { id: "ai-sounds-like-mine", label: "An AI output sounds like my work", next: "output-a3" },
+            { id: "not-sure", label: "Not sure where to start", next: "output-a4" }
+          ]},
+          q2b: { text: "What do you want to use?", options: [
+            { id: "voice-likeness", label: "Voice / likeness of a real person", next: "output-b-voice" },
+            { id: "sound-recording", label: "Sound recording / sample", next: "output-b-recording" },
+            { id: "composition", label: "Composition / melody", next: "output-b-composition" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2c: { text: "What's your role?", options: [
+            { id: "training-model", label: "Training a model on audio/music data", next: "output-c-training" },
+            { id: "using-pretrained", label: "Using a pre-trained model in my product", next: "output-c-pretrained" },
+            { id: "building-platform", label: "Building a platform where users upload/generate content", next: "output-c-platform" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]}
+        },
+        outputs: {
+          "output-a1": { title: "Found in Dataset", context: "Your work was found in a known training dataset", sections: [{ heading: "Requirements", items: ["Document evidence (screenshots, dataset name, URL)", "Check if you gave consent (platform ToS, distribution agreements)", "Review contracts for AI/ML clauses"] }, { heading: "Actions", items: ["File GDPR data subject access request (EU)", "Request removal under GDPR Article 17", "Contact dataset maintainer", "Consider legal consultation"] }], sources: [{ title: "GDPR Article 15", url: "https://gdpr-info.eu/art-15-gdpr/" }, { title: "Have I Been Trained", url: "https://haveibeentrained.com" }] },
+          "output-a2": { title: "Suspected Use", context: "You suspect your work was used but have no proof", sections: [{ heading: "Actions", items: ["Search Have I Been Trained", "Check Spawning.ai for opt-out tools", "Review your distributor's AI policy", "File GDPR access request to AI company"] }], sources: [{ title: "Have I Been Trained", url: "https://haveibeentrained.com" }, { title: "Spawning.ai", url: "https://spawning.ai" }] },
+          "output-a3": { title: "AI Output Sounds Like Your Work", context: "An AI-generated output resembles your work", sections: [{ heading: "Key Distinction", items: ["Similarity alone doesn't prove training data inclusion", "Copyright claims for AI output are legally untested", "Is this a copyright claim (output) or training data issue (input)?"] }, { heading: "Actions", items: ["Document the AI output", "Compare with your original", "For copyright: consult IP lawyer", "For training data: follow suspected use path"] }], sources: [] },
+          "output-a4": { title: "Getting Started", context: "Not sure where to begin", sections: [{ heading: "Actions", items: ["Start with Have I Been Trained", "Check your distributor's AI/ML policy", "Review contracts for AI training clauses", "Register with Spawning.ai"] }], sources: [{ title: "Have I Been Trained", url: "https://haveibeentrained.com" }] },
+          "output-b-voice": { title: "Using Voice / Likeness", context: "You want to use a real person's voice", sections: [{ heading: "Requirements", items: ["Explicit written consent required", "Consent must be specific to your use case", "Disclosure required for synthetic voices (EU AI Act)"] }, { heading: "Actions", items: ["Obtain written consent", "Disclose synthetic nature", "Check platform policies on AI vocals"] }], sources: [] },
+          "output-b-recording": { title: "Using Sound Recordings", context: "You want to sample or use existing recordings", sections: [{ heading: "Requirements", items: ["Master rights clearance (from label)", "Publishing rights clearance (from publisher)", "Both required for samples"] }, { heading: "Actions", items: ["Identify rights holders", "Contact for clearance before release", "Get clearance in writing"] }], sources: [] },
+          "output-b-composition": { title: "Using Compositions", context: "You want to use melody, lyrics, or musical elements", sections: [{ heading: "What's Protected", items: ["Melody: Protected", "Lyrics: Protected", "Chord progressions: Generally NOT protected"] }, { heading: "Actions", items: ["Contact publisher for melody/lyrics clearance", "Document your creative process"] }], sources: [] },
+          "output-c-training": { title: "Training a Model", context: "You're training an AI model on audio/music data", sections: [{ heading: "Requirements", items: ["EU AI Act: opt-out mechanism required", "Document data sources and consent", "GDPR applies if personal data included"] }, { heading: "Actions", items: ["Implement opt-out mechanism", "Document sources", "Consult legal counsel"] }], sources: [] },
+          "output-c-pretrained": { title: "Using Pre-trained Model", context: "Integrating a pre-trained AI model", sections: [{ heading: "Requirements", items: ["Review model's license terms", "Understand training data provenance", "Check for usage restrictions"] }, { heading: "Actions", items: ["Read license carefully", "Check for model card", "Document due diligence"] }], sources: [] },
+          "output-c-platform": { title: "Building a Platform", context: "Platform where users create/upload AI content", sections: [{ heading: "Requirements", items: ["Clear ToS covering AI training", "User consent mechanisms", "DMCA/takedown procedures"] }, { heading: "Actions", items: ["Draft comprehensive ToS", "Implement consent flows", "Set up takedown process"] }], sources: [] }
+        }
+      },
+      "training-data": {
+        id: "training-data",
+        title: "Training Data Provenance",
+        description: "Check where training data came from and how to verify or document it.",
+        icon: "◉",
+        entry: "q1",
+        questions: {
+          q1: { text: "What's your situation?", options: [
+            { id: "check-ai-tool", label: "I want to check what data was used to train an AI tool", next: "q2a" },
+            { id: "document-own", label: "I need to document my own training data sources", next: "q2b" },
+            { id: "verify-dataset", label: "I want to verify if a dataset has proper consent", next: "q2c" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2a: { text: "What do you want to know?", options: [
+            { id: "copyrighted", label: "Was copyrighted music used?", next: "output-a-copyright" },
+            { id: "my-work", label: "Was my specific work included?", next: "output-a-mywork" },
+            { id: "ethical", label: "Is it ethically sourced?", next: "output-a-ethical" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2b: { text: "What's your data source?", options: [
+            { id: "licensed", label: "Licensed/purchased datasets", next: "output-b-licensed" },
+            { id: "public-domain", label: "Public domain / CC-licensed", next: "output-b-public" },
+            { id: "scraped", label: "Scraped from internet", next: "output-b-scraped" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2c: { text: "What do you need to verify?", options: [
+            { id: "consent", label: "Original consent from data subjects", next: "output-c-consent" },
+            { id: "license", label: "License terms and restrictions", next: "output-c-license" },
+            { id: "compliance", label: "Regulatory compliance", next: "output-c-compliance" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]}
+        },
+        outputs: {
+          "output-a-copyright": { title: "Checking for Copyrighted Training Data", context: "Most commercial music AI tools were trained on copyrighted material", sections: [{ heading: "Reality Check", items: ["Few companies disclose full training data", "Transparency improving due to regulation", "Lack of disclosure ≠ consent obtained"] }, { heading: "Actions", items: ["Look for model card or documentation", "Search news for lawsuits", "Check Spawning.ai", "Review ToS"] }], sources: [{ title: "Spawning.ai", url: "https://spawning.ai" }] },
+          "output-a-mywork": { title: "Was My Work Included?", context: "Checking if your work was in training data", sections: [{ heading: "Actions", items: ["Use Have I Been Trained", "File GDPR access request (EU)", "Contact AI company directly", "Check distributor agreements"] }], sources: [{ title: "Have I Been Trained", url: "https://haveibeentrained.com" }] },
+          "output-a-ethical": { title: "Checking Ethical Sourcing", context: "Evaluating if training data was ethically sourced", sections: [{ heading: "Green Flags", items: ["Published model cards", "Artist partnerships", "Functional opt-out", "Revenue sharing"] }, { heading: "Red Flags", items: ["No transparency", "Defensive responses", "Ongoing lawsuits", "\"Publicly available\" as justification"] }], sources: [{ title: "Fairly Trained", url: "https://www.fairlytrained.org" }] },
+          "output-b-licensed": { title: "Documenting Licensed Datasets", context: "Using licensed/purchased datasets", sections: [{ heading: "Requirements", items: ["Keep license documentation", "Verify covers AI/ML training", "Check output restrictions"] }, { heading: "Document", items: ["Dataset name + source", "Date acquired", "License type", "AI training permitted (Y/N)"] }], sources: [] },
+          "output-b-public": { title: "Using Public Domain / CC Content", context: "Using public domain or Creative Commons material", sections: [{ heading: "Requirements", items: ["Verify public domain status", "Check CC license type", "CC-BY requires attribution"] }, { heading: "Watch Out", items: ["CC-NC prohibits commercial use", "CC-SA may affect outputs", "Older versions may not address AI"] }], sources: [] },
+          "output-b-scraped": { title: "Using Scraped Data", context: "Using data scraped from the internet", sections: [{ heading: "⚠️ High Risk", items: ["Highest legal risk category", "Class action exposure", "Regulatory scrutiny"] }, { heading: "Requirements", items: ["EU AI Act: opt-out required", "Check robots.txt and ToS", "GDPR applies if personal data"] }], sources: [] },
+          "output-c-consent": { title: "Verifying Consent", context: "Checking if proper consent was obtained", sections: [{ heading: "Questions to Ask", items: ["How was consent obtained?", "What were subjects told?", "Can it be withdrawn?"] }, { heading: "Red Flags", items: ["\"Publicly available\" as justification", "No documentation", "Consent buried in ToS"] }], sources: [] },
+          "output-c-license": { title: "Verifying License Terms", context: "Checking license terms and restrictions", sections: [{ heading: "Questions to Ask", items: ["Does it cover AI/ML training?", "Output restrictions?", "Commercial use allowed?"] }, { heading: "Actions", items: ["Get license in writing", "Check for AI clauses", "Document restrictions"] }], sources: [] },
+          "output-c-compliance": { title: "Regulatory Compliance Check", context: "Verifying GDPR, EU AI Act compliance", sections: [{ heading: "GDPR Checklist", items: ["Lawful basis documented?", "Data subject rights supported?", "Cross-border transfer compliant?"] }, { heading: "EU AI Act Checklist", items: ["Training data transparency met?", "Opt-out mechanism?", "Documentation sufficient?"] }], sources: [] }
+        }
+      },
+      "output-rights": {
+        id: "output-rights",
+        title: "Generated Output Rights",
+        description: "Understand who owns AI-generated work and what you can do with it.",
+        icon: "◈",
+        entry: "q1",
+        questions: {
+          q1: { text: "What's your situation?", options: [
+            { id: "release-sell", label: "I created something with AI and want to release/sell it", next: "q2a" },
+            { id: "understand", label: "I'm unsure who owns AI-generated output", next: "q2b" },
+            { id: "pre-use", label: "I want to understand obligations before using AI tools", next: "q2c" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2a: { text: "What did you create?", options: [
+            { id: "full-track", label: "Full track (AI-generated)", next: "output-a-full" },
+            { id: "ai-assisted", label: "AI-assisted (AI + significant human input)", next: "output-a-assisted" },
+            { id: "stems", label: "Stems/samples generated by AI", next: "output-a-stems" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2b: { text: "What do you want to know?", options: [
+            { id: "copyright", label: "Can AI music be copyrighted?", next: "output-b-copyright" },
+            { id: "ownership", label: "Who owns it—me or AI company?", next: "output-b-ownership" },
+            { id: "others-use", label: "Can others use my AI-generated work?", next: "output-b-others" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2c: { text: "What do you want to understand?", options: [
+            { id: "rights-give-up", label: "What rights do I give up?", next: "output-c-rights" },
+            { id: "disclosures", label: "What disclosures will I need?", next: "output-c-disclosures" },
+            { id: "commercial", label: "Commercial restrictions?", next: "output-c-commercial" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]}
+        },
+        outputs: {
+          "output-a-full": { title: "Releasing Full AI-Generated Track", context: "You created a fully AI-generated track", sections: [{ heading: "Ownership Reality", items: ["US: No copyright for purely AI-generated", "EU: Varies, generally requires human input", "You may have limited protection"] }, { heading: "Actions", items: ["Review AI tool's ToS", "Check distributor's AI policy", "Disclose AI use", "Consider adding human elements"] }], sources: [] },
+          "output-a-assisted": { title: "Releasing AI-Assisted Track", context: "AI + significant human input", sections: [{ heading: "Stronger Position", items: ["Human-authored elements are copyrightable", "Document which parts are human-created", "More human input = stronger claim"] }, { heading: "Actions", items: ["Document your contributions", "Keep project files", "Disclose AI assistance"] }], sources: [] },
+          "output-a-stems": { title: "Using AI-Generated Stems/Samples", context: "Using AI-generated stems or samples", sections: [{ heading: "Considerations", items: ["Same uncertainty as full tracks", "Your arrangement may be copyrightable", "Treat like sample library sounds"] }, { heading: "Actions", items: ["Check AI tool's ToS", "Document transformations", "Check license restrictions"] }], sources: [] },
+          "output-b-copyright": { title: "Can AI Music Be Copyrighted?", context: "Understanding copyright status", sections: [{ heading: "Current State (2026)", items: ["US: No copyright for purely AI-generated", "EU: Varies by member state", "Human selection may add copyrightable elements", "Prompts alone generally not enough"] }, { heading: "Actions", items: ["Add substantial human input", "Document creative decisions", "Monitor legal developments"] }], sources: [] },
+          "output-b-ownership": { title: "Who Owns AI Output?", context: "Understanding ownership", sections: [{ heading: "Depends on ToS", items: ["Some tools: you own outputs", "Some tools: they retain rights", "Some tools: shared rights"] }, { heading: "Actions", items: ["Read ToS carefully", "Look for ownership clauses", "Consider paid plans for clearer rights"] }], sources: [] },
+          "output-b-others": { title: "Can Others Use Your AI Work?", context: "Protection against copying", sections: [{ heading: "If No Copyright", items: ["You may not prevent others from using it", "No copyright = no infringement claim"] }, { heading: "Actions", items: ["Strengthen claim with human input", "Use contracts for commercial deals", "Keep methods confidential"] }], sources: [] },
+          "output-c-rights": { title: "Rights You May Give Up", context: "What you agree to in ToS", sections: [{ heading: "Possible Provisions", items: ["License to use your prompts", "License to use outputs for training", "Revenue sharing", "Exclusivity restrictions"] }, { heading: "Actions", items: ["Read ToS before creating", "Compare tools", "Consider trade-offs"] }], sources: [] },
+          "output-c-disclosures": { title: "Disclosure Requirements", context: "What you need to disclose", sections: [{ heading: "Regulatory", items: ["EU AI Act: synthetic content must be disclosed", "Requirements being finalized"] }, { heading: "Platform-Specific", items: ["Streaming services require disclosure", "Some require metadata tagging"] }], sources: [] },
+          "output-c-commercial": { title: "Commercial Restrictions", context: "Commercial use limitations", sections: [{ heading: "Common Restrictions", items: ["Free tier: often non-commercial", "Paid tier: commercial usually allowed", "Some tools: royalty obligations", "Prohibited uses (deepfakes, etc.)"] }, { heading: "Actions", items: ["Verify commercial rights", "Check plan tier", "Look for prohibited uses"] }], sources: [] }
+        }
+      },
+      "transparency": {
+        id: "transparency",
+        title: "Transparency & Disclosure",
+        description: "Know when and how to disclose AI use, or proactively label your work.",
+        icon: "◎",
+        entry: "q1",
+        questions: {
+          q1: { text: "What's your situation?", options: [
+            { id: "must-disclose", label: "I need to know if/when I must disclose AI use", next: "q2a" },
+            { id: "self-label", label: "I want to proactively label my work", next: "q2b" },
+            { id: "product", label: "I'm building a product—need disclosure requirements", next: "q2c" },
+            { id: "other", label: "Something else", next: "edge-case", log: true }
+          ]},
+          q2a: { text: "What's your jurisdiction?", options: [
+            { id: "eu", label: "EU / EEA", next: "output-a-eu" },
+            { id: "us", label: "US", next: "output-a-us" },
+            { id: "global", label: "Multiple / global", next: "output-a-global" },
+            { id: "other", label: "Other", next: "output-a-other" }
+          ]},
+          q2b: { text: "What level of detail?", options: [
+            { id: "simple", label: "Simple label (AI / Human / Hybrid)", next: "output-b-simple" },
+            { id: "detailed", label: "Detailed breakdown", next: "output-b-detailed" },
+            { id: "full", label: "Full transparency", next: "output-b-full" },
+            { id: "not-sure", label: "Not sure what's appropriate", next: "output-b-guide" }
+          ]},
+          q2c: { text: "Where will your product be available?", options: [
+            { id: "eu", label: "EU / EEA", next: "output-c-eu" },
+            { id: "us", label: "US", next: "output-c-us" },
+            { id: "global", label: "Global", next: "output-c-global" },
+            { id: "other", label: "Other", next: "output-c-other" }
+          ]}
+        },
+        outputs: {
+          "output-a-eu": { title: "EU Disclosure Requirements", context: "Requirements for EU/EEA", sections: [{ heading: "EU AI Act (Article 52)", items: ["Synthetic content must be disclosed", "Must be machine-readable", "Phased implementation through 2026"] }, { heading: "Actions", items: ["Disclose in metadata and visible labeling", "Prepare machine-readable markers", "Monitor EU AI Office guidance"] }], sources: [] },
+          "output-a-us": { title: "US Disclosure Requirements", context: "Requirements for US", sections: [{ heading: "Current State", items: ["No federal AI disclosure law (2026)", "State laws emerging", "FTC deceptive practices may apply", "Platform policies may require it"] }, { heading: "Actions", items: ["Check state laws", "Follow platform policies", "Consider voluntary disclosure"] }], sources: [] },
+          "output-a-global": { title: "Global Distribution", context: "Multiple jurisdictions", sections: [{ heading: "Approach", items: ["Comply with most restrictive (likely EU)", "Platform policies apply globally", "Voluntary disclosure reduces risk"] }, { heading: "Platform Requirements", items: ["Spotify: AI disclosure required", "YouTube: AI labels available", "TikTok: AI labels in some cases", "Meta: AI labeling in place"] }], sources: [] },
+          "output-a-other": { title: "Other Jurisdictions", context: "Requirements vary", sections: [{ heading: "Guidance", items: ["Check local regulations", "Follow platform policies", "When in doubt, disclose"] }], sources: [] },
+          "output-b-simple": { title: "Simple Labeling", context: "Basic disclosure", sections: [{ heading: "Label Framework", items: ["Human — No AI used", "AI-Assisted — AI as tool, human decisions", "Hybrid — Significant AI + human", "AI-Generated — Primarily AI"] }, { heading: "Where to Apply", items: ["Track description", "Credits", "Metadata"] }], sources: [] },
+          "output-b-detailed": { title: "Detailed Labeling", context: "Breakdown of contributions", sections: [{ heading: "Format Example", items: ["Composition: Human", "Vocal synthesis: AI (tool)", "Production: AI-Assisted", "Mixing: Human"] }, { heading: "Where to Apply", items: ["Liner notes", "Extended credits", "Website/EPK"] }], sources: [] },
+          "output-b-full": { title: "Full Transparency", context: "Complete documentation", sections: [{ heading: "Include", items: ["Tools used (with versions)", "Human contribution statement", "Process description", "Creative decisions by human"] }, { heading: "Metadata", items: ["ai_disclosure: yes/no", "ai_level: human/assisted/hybrid/generated", "ai_tools: [list]"] }], sources: [] },
+          "output-b-guide": { title: "Choosing Your Level", context: "Help deciding", sections: [{ heading: "Recommendations", items: ["Commercial release → At minimum simple label", "AI transparency brand → Full transparency", "Casual sharing → Simple sufficient", "Sync/licensing → Detailed (clients will ask)"] }, { heading: "Principle", items: ["Start simple, add detail as needed", "Consistency matters", "Transparency builds trust"] }], sources: [] },
+          "output-c-eu": { title: "EU Product Requirements", context: "AI products serving EU", sections: [{ heading: "EU AI Act", items: ["Users must know they're interacting with AI", "Synthetic content must be detectable", "High-risk systems have additional requirements"] }, { heading: "Actions", items: ["Implement disclosure mechanisms", "Provide output labeling tools", "Document compliance", "Monitor guidance"] }], sources: [] },
+          "output-c-us": { title: "US Product Requirements", context: "AI products in US", sections: [{ heading: "Current State", items: ["No comprehensive federal AI law", "FTC guidance on disclosures", "State laws emerging", "Prepare for future regulation"] }], sources: [] },
+          "output-c-global": { title: "Global Product Requirements", context: "AI products worldwide", sections: [{ heading: "Approach", items: ["Comply with most restrictive (EU)", "Build scalable disclosure infrastructure", "Transparency builds trust"] }, { heading: "Requirements", items: ["User-facing AI disclosure", "Output labeling tools", "Training data transparency", "Clear ToS on ownership"] }], sources: [] },
+          "output-c-other": { title: "Other Jurisdictions", context: "Requirements vary", sections: [{ heading: "Guidance", items: ["Research local regulations", "Consider EU compliance as baseline", "Voluntary transparency builds trust"] }], sources: [] }
+        }
+      }
+    };
+
+    function Header({ onReset }) {
+      return (
+        <header className="header">
+          <div className="header-content">
+            <div className="header-title" onClick={onReset}>
+              <span className="header-icon">◬</span>
+              <h1>Music AI Compliance Navigator</h1>
+            </div>
+            <p className="header-subtitle">Navigate consent, training data, output rights, and disclosure</p>
+          </div>
+        </header>
+      );
+    }
+
+    function UseCaseSelector({ onSelect }) {
+      return (
+        <div className="use-case-selector">
+          <h2>Select a topic</h2>
+          <div className="use-case-grid">
+            {Object.values(useCases).map((uc) => (
+              <button key={uc.id} className="use-case-card" onClick={() => onSelect(uc.id)}>
+                <span className="use-case-icon">{uc.icon}</span>
+                <h3>{uc.title}</h3>
+                <p>{uc.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Breadcrumb({ useCase, path, onReset }) {
+      return (
+        <nav className="breadcrumb">
+          <button onClick={onReset} className="breadcrumb-item">Topics</button>
+          <span className="breadcrumb-separator">→</span>
+          <span className="breadcrumb-item active">{useCases[useCase].title}</span>
+          {path.length > 1 && (<><span className="breadcrumb-separator">→</span><span className="breadcrumb-item current">Q{path.length}</span></>)}
+        </nav>
+      );
+    }
+
+    function Question({ question, onAnswer }) {
+      return (
+        <div className="question">
+          <h2 className="question-text">{question.text}</h2>
+          <div className="options">
+            {question.options.map((option) => (
+              <button key={option.id} className="option-button" onClick={() => onAnswer(option)}>
+                <span className="option-marker">○</span>
+                <span className="option-label">{option.label}</span>
+                <span className="option-arrow">→</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Output({ output, onBack, onReset }) {
+      return (
+        <div className="output">
+          <div className="output-header">
+            <h2 className="output-title">{output.title}</h2>
+            {output.context && <p className="output-context">{output.context}</p>}
+          </div>
+          <div className="output-sections">
+            {output.sections.map((section, idx) => (
+              <div key={idx} className="output-section">
+                <h3 className="section-heading">{section.heading}</h3>
+                <ul className="section-items">{section.items.map((item, i) => <li key={i}>{item}</li>)}</ul>
+              </div>
+            ))}
+          </div>
+          {output.sources && output.sources.length > 0 && (
+            <div className="output-sources">
+              <h3 className="section-heading">Sources & Resources</h3>
+              <ul className="sources-list">
+                {output.sources.map((source, idx) => (
+                  <li key={idx}>{source.url ? <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a> : <span>{source.title}</span>}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="output-actions">
+            <button onClick={onBack} className="btn-secondary">← Back</button>
+            <button onClick={onReset} className="btn-primary">Start Over</button>
+          </div>
+        </div>
+      );
+    }
+
+    function EdgeCase({ onBack, onReset }) {
+      const [input, setInput] = useState('');
+      const [submitted, setSubmitted] = useState(false);
+      
+      if (submitted) {
+        return (
+          <div className="edge-case">
+            <div className="edge-case-thanks">
+              <span className="edge-icon">✓</span>
+              <h2>Thanks for your input</h2>
+              <p>Your situation has been logged and will help us expand the Navigator.</p>
+            </div>
+            <div className="output-actions"><button onClick={onReset} className="btn-primary">Start Over</button></div>
+          </div>
+        );
+      }
+      
+      return (
+        <div className="edge-case">
+          <h2>Tell us more</h2>
+          <p>Your situation doesn't fit our current paths. Help us improve:</p>
+          <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Describe your situation..." className="edge-case-input" />
+          <div className="output-actions">
+            <button onClick={onBack} className="btn-secondary">← Back</button>
+            <button onClick={() => setSubmitted(true)} className="btn-primary" disabled={!input.trim()}>Submit</button>
+          </div>
+        </div>
+      );
+    }
+
+    function Footer() {
+      return (
+        <footer className="footer">
+          <div className="footer-content">
+            <p><a href="https://github.com/Pi-Kay/music-ai-compliance-navigator" target="_blank">GitHub</a><span className="footer-sep">·</span><a href="https://pi-kay.github.io/portfolio/navigator.html" target="_blank">About</a></p>
+            <p className="footer-disclaimer">Not legal advice. Regulations evolve. Consult a professional.</p>
+          </div>
+        </footer>
+      );
+    }
+
+    function App() {
+      const [currentUseCase, setCurrentUseCase] = useState(null);
+      const [currentNode, setCurrentNode] = useState(null);
+      const [path, setPath] = useState([]);
+      
+      const reset = () => { setCurrentUseCase(null); setCurrentNode(null); setPath([]); };
+      const selectUseCase = (id) => { setCurrentUseCase(id); setCurrentNode(useCases[id].entry); setPath([useCases[id].entry]); };
+      const handleAnswer = (option) => { setCurrentNode(option.next); setPath([...path, option.next]); };
+      const goBack = () => { if (path.length > 1) { const newPath = path.slice(0, -1); setPath(newPath); setCurrentNode(newPath[newPath.length - 1]); } else { reset(); } };
+      
+      const renderContent = () => {
+        if (!currentUseCase) return <UseCaseSelector onSelect={selectUseCase} />;
+        const uc = useCases[currentUseCase];
+        if (currentNode === 'edge-case') return <><Breadcrumb useCase={currentUseCase} path={path} onReset={reset} /><EdgeCase onBack={goBack} onReset={reset} /></>;
+        if (currentNode.startsWith('output-')) return <><Breadcrumb useCase={currentUseCase} path={path} onReset={reset} /><Output output={uc.outputs[currentNode]} onBack={goBack} onReset={reset} /></>;
+        return <><Breadcrumb useCase={currentUseCase} path={path} onReset={reset} /><Question question={uc.questions[currentNode]} onAnswer={handleAnswer} /></>;
+      };
+      
+      return (
+        <div className="app">
+          <Header onReset={reset} />
+          <main className="main"><div className="container">{renderContent()}</div></main>
+          <Footer />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
