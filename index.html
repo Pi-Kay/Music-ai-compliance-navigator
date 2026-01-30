@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music AI Compliance Navigator</title>
   <meta name="description" content="Navigate AI compliance for music — consent, training data, output rights, and disclosure requirements.">
+  <meta name="theme-color" content="#0d1b2a">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬡</text></svg>">
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,33 +35,40 @@
     }
     
     #root { min-height: 100vh; }
-    
     .app { min-height: 100vh; display: flex; flex-direction: column; background: var(--white); }
     .main { flex: 1; padding: 2rem 1rem 4rem; }
     .container { max-width: 720px; margin: 0 auto; }
     
-    .header { border-bottom: 1px solid var(--navy); padding: 1.5rem 1rem; background: var(--white); }
-    .header-content { max-width: 720px; margin: 0 auto; }
-    .header-title { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
-    .header-icon { font-size: 1.5rem; color: var(--navy); }
-    .header h1 { font-size: 1.25rem; font-weight: 500; color: var(--navy); letter-spacing: -0.01em; }
-    .header-subtitle { margin-top: 0.25rem; font-size: 0.875rem; color: var(--grey-500); }
+    .header { border-bottom: 1px solid var(--navy); padding: 1rem 1rem; background: var(--white); position: sticky; top: 0; z-index: 100; }
+    .header-content { max-width: 720px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .header-left { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+    .header-icon { font-size: 1.25rem; color: var(--navy); }
+    .header h1 { font-size: 1.125rem; font-weight: 500; color: var(--navy); letter-spacing: -0.01em; }
+    .header-help { font-size: 0.875rem; color: var(--grey-400); text-decoration: none; padding: 0.5rem; border-radius: 50%; transition: all 0.15s; }
+    .header-help:hover { color: var(--navy); background: var(--grey-100); }
+    @media (max-width: 600px) { .header h1 { font-size: 0.95rem; } }
+    
+    .progress-bar { height: 3px; background: var(--grey-200); margin-bottom: 2rem; border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--amber); transition: width 0.3s ease; }
+    
+    .step-indicator { font-size: 0.75rem; color: var(--grey-400); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
     
     .use-case-selector h2 { font-size: 1rem; font-weight: 500; color: var(--grey-500); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
     .use-case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
     @media (max-width: 600px) { .use-case-grid { grid-template-columns: 1fr; } }
     
-    .use-case-card { background: var(--white); border: 1px solid var(--grey-200); border-radius: 2px; padding: 1.5rem; text-align: left; cursor: pointer; transition: all 0.15s ease; font-family: inherit; }
-    .use-case-card:hover { border-color: var(--navy); background: var(--grey-50); }
+    .use-case-card { background: var(--white); border: 1px solid var(--grey-200); border-radius: 8px; padding: 1.5rem; text-align: left; cursor: pointer; transition: all 0.15s ease; font-family: inherit; }
+    .use-case-card:hover, .use-case-card:focus { border-color: var(--navy); background: var(--grey-50); outline: none; }
+    .use-case-card:focus { box-shadow: 0 0 0 2px var(--amber); }
     .use-case-icon { display: block; font-size: 1.5rem; color: var(--navy); margin-bottom: 0.75rem; }
     .use-case-card h3 { font-size: 1rem; font-weight: 500; color: var(--grey-600); margin-bottom: 0.5rem; }
     .use-case-card p { font-size: 0.875rem; color: var(--grey-500); line-height: 1.5; }
     
-    .breadcrumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; font-size: 0.875rem; }
-    .breadcrumb-item { background: none; border: none; color: var(--grey-400); cursor: pointer; padding: 0; font-size: inherit; font-family: inherit; }
-    .breadcrumb-item:hover { color: var(--navy); }
+    .breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.875rem; }
+    .breadcrumb-item { background: none; border: none; color: var(--grey-400); cursor: pointer; padding: 0.25rem 0.5rem; font-size: inherit; font-family: inherit; border-radius: 4px; transition: all 0.15s; }
+    .breadcrumb-item:hover, .breadcrumb-item:focus { color: var(--navy); background: var(--grey-100); outline: none; }
     .breadcrumb-item.active { color: var(--grey-600); }
-    .breadcrumb-item.current { color: var(--amber-dark); }
+    .breadcrumb-item.current { color: var(--amber-dark); background: var(--grey-100); }
     .breadcrumb-separator { color: var(--grey-300); }
     
     .question { animation: fadeIn 0.2s ease; }
@@ -67,13 +76,18 @@
     .question-text { font-size: 1.5rem; font-weight: 500; color: var(--grey-600); margin-bottom: 2rem; line-height: 1.3; }
     .options { display: flex; flex-direction: column; gap: 0.5rem; }
     
-    .option-button { display: flex; align-items: center; gap: 1rem; width: 100%; padding: 1rem 1.25rem; background: var(--white); border: 1px solid var(--grey-200); border-radius: 2px; text-align: left; cursor: pointer; transition: all 0.15s ease; font-family: inherit; font-size: 1rem; }
-    .option-button:hover { border-color: var(--navy); background: var(--grey-50); }
-    .option-marker { color: var(--grey-300); font-size: 0.75rem; }
-    .option-button:hover .option-marker { color: var(--amber); }
+    .option-button { display: flex; align-items: center; gap: 1rem; width: 100%; padding: 1rem 1.25rem; background: var(--white); border: 1px solid var(--grey-200); border-radius: 8px; text-align: left; cursor: pointer; transition: all 0.15s ease; font-family: inherit; font-size: 1rem; min-height: 56px; }
+    .option-button:hover, .option-button:focus { border-color: var(--navy); background: var(--grey-50); outline: none; }
+    .option-button:focus { box-shadow: 0 0 0 2px var(--amber); }
+    .option-button.selected { border-color: var(--amber); background: #fffbf0; }
+    .option-marker { color: var(--grey-300); font-size: 0.875rem; width: 20px; text-align: center; }
+    .option-button:hover .option-marker, .option-button:focus .option-marker { color: var(--amber); }
     .option-label { flex: 1; font-size: 1rem; color: var(--grey-600); }
     .option-arrow { color: var(--grey-300); transition: transform 0.15s ease; }
-    .option-button:hover .option-arrow { transform: translateX(4px); color: var(--navy); }
+    .option-button:hover .option-arrow, .option-button:focus .option-arrow { transform: translateX(4px); color: var(--navy); }
+    
+    .keyboard-hint { margin-top: 1.5rem; font-size: 0.75rem; color: var(--grey-400); }
+    .keyboard-hint kbd { background: var(--grey-100); padding: 0.15rem 0.4rem; border-radius: 3px; font-family: inherit; font-size: 0.7rem; border: 1px solid var(--grey-200); }
     
     .output { animation: fadeIn 0.2s ease; }
     .output-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--grey-200); }
@@ -86,7 +100,7 @@
     .section-items li { position: relative; padding-left: 1.25rem; margin-bottom: 0.5rem; font-size: 1rem; color: var(--grey-600); line-height: 1.5; }
     .section-items li::before { content: "—"; position: absolute; left: 0; color: var(--grey-300); }
     
-    .output-sources { padding: 1.5rem; background: var(--grey-50); border: 1px solid var(--grey-200); border-radius: 2px; margin-bottom: 2rem; }
+    .output-sources { padding: 1.5rem; background: var(--grey-50); border: 1px solid var(--grey-200); border-radius: 8px; margin-bottom: 2rem; }
     .sources-list { list-style: none; padding: 0; }
     .sources-list li { margin-bottom: 0.5rem; font-size: 0.875rem; }
     .sources-list a { color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--amber); }
@@ -94,21 +108,29 @@
     
     .output-actions { display: flex; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--grey-200); }
     
-    .btn-primary, .btn-secondary { padding: 0.75rem 1.5rem; font-size: 0.875rem; font-weight: 500; border-radius: 2px; cursor: pointer; transition: all 0.15s ease; font-family: inherit; }
+    .btn-primary, .btn-secondary { padding: 0.875rem 1.5rem; font-size: 0.875rem; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; font-family: inherit; min-height: 48px; }
     .btn-primary { background: var(--navy); color: var(--white); border: 1px solid var(--navy); }
-    .btn-primary:hover { background: var(--navy-light); }
+    .btn-primary:hover, .btn-primary:focus { background: var(--navy-light); outline: none; }
+    .btn-primary:focus { box-shadow: 0 0 0 2px var(--amber); }
     .btn-primary:disabled { background: var(--grey-300); border-color: var(--grey-300); cursor: not-allowed; }
     .btn-secondary { background: var(--white); color: var(--grey-600); border: 1px solid var(--grey-200); }
-    .btn-secondary:hover { border-color: var(--grey-400); }
+    .btn-secondary:hover, .btn-secondary:focus { border-color: var(--grey-400); outline: none; }
+    .btn-secondary:focus { box-shadow: 0 0 0 2px var(--amber); }
     
     .edge-case { animation: fadeIn 0.2s ease; }
     .edge-case h2 { font-size: 1.5rem; font-weight: 500; color: var(--grey-600); margin-bottom: 0.5rem; }
     .edge-case > p { color: var(--grey-500); margin-bottom: 1.5rem; }
-    .edge-case-input { width: 100%; min-height: 120px; padding: 1rem; font-size: 1rem; font-family: inherit; border: 1px solid var(--grey-200); border-radius: 2px; resize: vertical; margin-bottom: 1.5rem; }
-    .edge-case-input:focus { outline: none; border-color: var(--navy); }
+    .edge-case-input { width: 100%; min-height: 120px; padding: 1rem; font-size: 1rem; font-family: inherit; border: 1px solid var(--grey-200); border-radius: 8px; resize: vertical; margin-bottom: 1.5rem; }
+    .edge-case-input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 2px var(--amber); }
     .edge-case-thanks { text-align: center; padding: 3rem 1rem; }
     .edge-icon { display: inline-block; width: 48px; height: 48px; line-height: 48px; background: var(--amber); color: var(--white); border-radius: 50%; font-size: 1.5rem; margin-bottom: 1rem; }
     .edge-case-thanks p { color: var(--grey-500); }
+    
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 0.15s ease; }
+    .modal { background: var(--white); border-radius: 12px; padding: 2rem; max-width: 400px; width: 90%; text-align: center; }
+    .modal h3 { font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--grey-600); }
+    .modal p { color: var(--grey-500); margin-bottom: 1.5rem; }
+    .modal-actions { display: flex; gap: 1rem; justify-content: center; }
     
     .footer { border-top: 1px solid var(--grey-200); padding: 1.5rem 1rem; background: var(--grey-50); }
     .footer-content { max-width: 720px; margin: 0 auto; text-align: center; }
@@ -126,27 +148,23 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect, useCallback } = React;
 
     const useCases = {
       "consent-attribution": {
-        id: "consent-attribution",
-        title: "Consent & Attribution",
-        description: "Check if consent was given or is required, and what attribution obligations exist.",
-        icon: "§",
-        entry: "q1",
+        id: "consent-attribution", title: "Consent & Attribution", description: "Check if consent was given or is required, and what attribution obligations exist.", icon: "§", entry: "q1",
         questions: {
           q1: { text: "What's your situation?", options: [
             { id: "my-work-used", label: "My work may have been used without permission", next: "q2a" },
             { id: "use-others-work", label: "I want to use someone else's work", next: "q2b" },
             { id: "building-tool", label: "I'm building a tool/product that uses others' work", next: "q2c" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2a: { text: "What type of work?", options: [
             { id: "sound-recording", label: "Sound recording (released track, stems, samples)", next: "q3a" },
             { id: "voice", label: "Voice / vocal performance", next: "q3a" },
             { id: "composition", label: "Composition / melody / lyrics", next: "q3a" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q3a: { text: "What do you know?", options: [
             { id: "found-in-dataset", label: "I found my work in a known dataset", next: "output-a1" },
@@ -158,13 +176,13 @@
             { id: "voice-likeness", label: "Voice / likeness of a real person", next: "output-b-voice" },
             { id: "sound-recording", label: "Sound recording / sample", next: "output-b-recording" },
             { id: "composition", label: "Composition / melody", next: "output-b-composition" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2c: { text: "What's your role?", options: [
             { id: "training-model", label: "Training a model on audio/music data", next: "output-c-training" },
             { id: "using-pretrained", label: "Using a pre-trained model in my product", next: "output-c-pretrained" },
             { id: "building-platform", label: "Building a platform where users upload/generate content", next: "output-c-platform" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]}
         },
         outputs: {
@@ -181,35 +199,31 @@
         }
       },
       "training-data": {
-        id: "training-data",
-        title: "Training Data Provenance",
-        description: "Check where training data came from and how to verify or document it.",
-        icon: "◉",
-        entry: "q1",
+        id: "training-data", title: "Training Data Provenance", description: "Check where training data came from and how to verify or document it.", icon: "◉", entry: "q1",
         questions: {
           q1: { text: "What's your situation?", options: [
             { id: "check-ai-tool", label: "I want to check what data was used to train an AI tool", next: "q2a" },
             { id: "document-own", label: "I need to document my own training data sources", next: "q2b" },
             { id: "verify-dataset", label: "I want to verify if a dataset has proper consent", next: "q2c" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2a: { text: "What do you want to know?", options: [
             { id: "copyrighted", label: "Was copyrighted music used?", next: "output-a-copyright" },
             { id: "my-work", label: "Was my specific work included?", next: "output-a-mywork" },
             { id: "ethical", label: "Is it ethically sourced?", next: "output-a-ethical" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2b: { text: "What's your data source?", options: [
             { id: "licensed", label: "Licensed/purchased datasets", next: "output-b-licensed" },
             { id: "public-domain", label: "Public domain / CC-licensed", next: "output-b-public" },
             { id: "scraped", label: "Scraped from internet", next: "output-b-scraped" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2c: { text: "What do you need to verify?", options: [
             { id: "consent", label: "Original consent from data subjects", next: "output-c-consent" },
             { id: "license", label: "License terms and restrictions", next: "output-c-license" },
             { id: "compliance", label: "Regulatory compliance", next: "output-c-compliance" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]}
         },
         outputs: {
@@ -225,35 +239,31 @@
         }
       },
       "output-rights": {
-        id: "output-rights",
-        title: "Generated Output Rights",
-        description: "Understand who owns AI-generated work and what you can do with it.",
-        icon: "◈",
-        entry: "q1",
+        id: "output-rights", title: "Generated Output Rights", description: "Understand who owns AI-generated work and what you can do with it.", icon: "◈", entry: "q1",
         questions: {
           q1: { text: "What's your situation?", options: [
             { id: "release-sell", label: "I created something with AI and want to release/sell it", next: "q2a" },
             { id: "understand", label: "I'm unsure who owns AI-generated output", next: "q2b" },
             { id: "pre-use", label: "I want to understand obligations before using AI tools", next: "q2c" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2a: { text: "What did you create?", options: [
             { id: "full-track", label: "Full track (AI-generated)", next: "output-a-full" },
             { id: "ai-assisted", label: "AI-assisted (AI + significant human input)", next: "output-a-assisted" },
             { id: "stems", label: "Stems/samples generated by AI", next: "output-a-stems" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2b: { text: "What do you want to know?", options: [
             { id: "copyright", label: "Can AI music be copyrighted?", next: "output-b-copyright" },
             { id: "ownership", label: "Who owns it—me or AI company?", next: "output-b-ownership" },
             { id: "others-use", label: "Can others use my AI-generated work?", next: "output-b-others" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2c: { text: "What do you want to understand?", options: [
             { id: "rights-give-up", label: "What rights do I give up?", next: "output-c-rights" },
             { id: "disclosures", label: "What disclosures will I need?", next: "output-c-disclosures" },
             { id: "commercial", label: "Commercial restrictions?", next: "output-c-commercial" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]}
         },
         outputs: {
@@ -269,17 +279,13 @@
         }
       },
       "transparency": {
-        id: "transparency",
-        title: "Transparency & Disclosure",
-        description: "Know when and how to disclose AI use, or proactively label your work.",
-        icon: "◎",
-        entry: "q1",
+        id: "transparency", title: "Transparency & Disclosure", description: "Know when and how to disclose AI use, or proactively label your work.", icon: "◎", entry: "q1",
         questions: {
           q1: { text: "What's your situation?", options: [
             { id: "must-disclose", label: "I need to know if/when I must disclose AI use", next: "q2a" },
             { id: "self-label", label: "I want to proactively label my work", next: "q2b" },
             { id: "product", label: "I'm building a product—need disclosure requirements", next: "q2c" },
-            { id: "other", label: "Something else", next: "edge-case", log: true }
+            { id: "other", label: "Something else", next: "edge-case" }
           ]},
           q2a: { text: "What's your jurisdiction?", options: [
             { id: "eu", label: "EU / EEA", next: "output-a-eu" },
@@ -321,64 +327,112 @@
       return (
         <header className="header">
           <div className="header-content">
-            <div className="header-title" onClick={onReset}>
+            <div className="header-left" onClick={onReset} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onReset()}>
               <span className="header-icon">⬡</span>
               <h1>Music AI Compliance Navigator</h1>
             </div>
-            <p className="header-subtitle">Navigate consent, training data, output rights, and disclosure</p>
+            <a href="https://github.com/Pi-Kay/music-ai-compliance-navigator#readme" target="_blank" rel="noopener noreferrer" className="header-help" title="Help & Documentation">?</a>
           </div>
         </header>
       );
     }
 
+    function ProgressBar({ current, total }) {
+      const percent = total > 0 ? (current / total) * 100 : 0;
+      return <div className="progress-bar"><div className="progress-fill" style={{ width: `${percent}%` }} /></div>;
+    }
+
     function UseCaseSelector({ onSelect }) {
+      const [focused, setFocused] = useState(0);
+      const cases = Object.values(useCases);
+      
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); setFocused(f => (f + 1) % cases.length); }
+          else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setFocused(f => (f - 1 + cases.length) % cases.length); }
+          else if (e.key === 'Enter') { onSelect(cases[focused].id); }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, [focused, cases, onSelect]);
+      
       return (
         <div className="use-case-selector">
           <h2>Select a topic</h2>
           <div className="use-case-grid">
-            {Object.values(useCases).map((uc) => (
-              <button key={uc.id} className="use-case-card" onClick={() => onSelect(uc.id)}>
+            {cases.map((uc, idx) => (
+              <button key={uc.id} className="use-case-card" onClick={() => onSelect(uc.id)} tabIndex={idx === focused ? 0 : -1} ref={el => idx === focused && el?.focus()}>
                 <span className="use-case-icon">{uc.icon}</span>
                 <h3>{uc.title}</h3>
                 <p>{uc.description}</p>
               </button>
             ))}
           </div>
+          <p className="keyboard-hint"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>Enter</kbd> select</p>
         </div>
       );
     }
 
-    function Breadcrumb({ useCase, path, onReset }) {
+    function Breadcrumb({ useCase, history, onJumpTo, onReset }) {
       return (
         <nav className="breadcrumb">
           <button onClick={onReset} className="breadcrumb-item">Topics</button>
           <span className="breadcrumb-separator">→</span>
-          <span className="breadcrumb-item active">{useCases[useCase].title}</span>
-          {path.length > 1 && (<><span className="breadcrumb-separator">→</span><span className="breadcrumb-item current">Q{path.length}</span></>)}
+          <button onClick={() => onJumpTo(0)} className="breadcrumb-item active">{useCases[useCase].title}</button>
+          {history.map((item, idx) => (
+            <React.Fragment key={idx}>
+              <span className="breadcrumb-separator">→</span>
+              <button onClick={() => onJumpTo(idx + 1)} className={`breadcrumb-item ${idx === history.length - 1 ? 'current' : ''}`}>Q{idx + 1}</button>
+            </React.Fragment>
+          ))}
         </nav>
       );
     }
 
-    function Question({ question, onAnswer }) {
+    function Question({ question, onAnswer, stepNum, totalSteps }) {
+      const [focused, setFocused] = useState(0);
+      
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (e.key === 'ArrowDown') { e.preventDefault(); setFocused(f => (f + 1) % question.options.length); }
+          else if (e.key === 'ArrowUp') { e.preventDefault(); setFocused(f => (f - 1 + question.options.length) % question.options.length); }
+          else if (e.key === 'Enter') { onAnswer(question.options[focused]); }
+          else if (e.key >= '1' && e.key <= '9') { const idx = parseInt(e.key) - 1; if (idx < question.options.length) onAnswer(question.options[idx]); }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, [focused, question, onAnswer]);
+      
+      useEffect(() => { setFocused(0); }, [question]);
+      
       return (
         <div className="question">
+          <div className="step-indicator">Step {stepNum} of {totalSteps}</div>
           <h2 className="question-text">{question.text}</h2>
           <div className="options">
-            {question.options.map((option) => (
-              <button key={option.id} className="option-button" onClick={() => onAnswer(option)}>
-                <span className="option-marker">○</span>
+            {question.options.map((option, idx) => (
+              <button key={option.id} className={`option-button ${idx === focused ? 'selected' : ''}`} onClick={() => onAnswer(option)} tabIndex={idx === focused ? 0 : -1} ref={el => idx === focused && el?.focus()}>
+                <span className="option-marker">{idx + 1}</span>
                 <span className="option-label">{option.label}</span>
                 <span className="option-arrow">→</span>
               </button>
             ))}
           </div>
+          <p className="keyboard-hint"><kbd>↑</kbd> <kbd>↓</kbd> navigate · <kbd>Enter</kbd> or <kbd>1</kbd>-<kbd>{question.options.length}</kbd> select</p>
         </div>
       );
     }
 
     function Output({ output, onBack, onReset }) {
+      useEffect(() => {
+        const handleKeyDown = (e) => { if (e.key === 'Backspace' || e.key === 'Escape') { e.preventDefault(); onBack(); } };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, [onBack]);
+      
       return (
         <div className="output">
+          <div className="step-indicator">Result</div>
           <div className="output-header">
             <h2 className="output-title">{output.title}</h2>
             {output.context && <p className="output-context">{output.context}</p>}
@@ -391,19 +445,37 @@
               </div>
             ))}
           </div>
-          {output.sources && output.sources.length > 0 && (
+          {output.sources?.length > 0 && (
             <div className="output-sources">
               <h3 className="section-heading">Sources & Resources</h3>
-              <ul className="sources-list">
-                {output.sources.map((source, idx) => (
-                  <li key={idx}>{source.url ? <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a> : <span>{source.title}</span>}</li>
-                ))}
-              </ul>
+              <ul className="sources-list">{output.sources.map((source, idx) => (<li key={idx}>{source.url ? <a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a> : <span>{source.title}</span>}</li>))}</ul>
             </div>
           )}
           <div className="output-actions">
             <button onClick={onBack} className="btn-secondary">← Back</button>
             <button onClick={onReset} className="btn-primary">Start Over</button>
+          </div>
+          <p className="keyboard-hint" style={{marginTop: '1rem'}}><kbd>Backspace</kbd> back · <kbd>Esc</kbd> start over</p>
+        </div>
+      );
+    }
+
+    function ConfirmModal({ message, onConfirm, onCancel }) {
+      useEffect(() => {
+        const handleKeyDown = (e) => { if (e.key === 'Escape') onCancel(); if (e.key === 'Enter') onConfirm(); };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, [onConfirm, onCancel]);
+      
+      return (
+        <div className="modal-overlay" onClick={onCancel}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3>Confirm submission</h3>
+            <p>{message}</p>
+            <div className="modal-actions">
+              <button onClick={onCancel} className="btn-secondary">Cancel</button>
+              <button onClick={onConfirm} className="btn-primary">Submit</button>
+            </div>
           </div>
         </div>
       );
@@ -411,6 +483,7 @@
 
     function EdgeCase({ onBack, onReset }) {
       const [input, setInput] = useState('');
+      const [showConfirm, setShowConfirm] = useState(false);
       const [submitted, setSubmitted] = useState(false);
       
       if (submitted) {
@@ -428,13 +501,15 @@
       
       return (
         <div className="edge-case">
+          <div className="step-indicator">Feedback</div>
           <h2>Tell us more</h2>
           <p>Your situation doesn't fit our current paths. Help us improve:</p>
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Describe your situation..." className="edge-case-input" />
+          <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Describe your situation..." className="edge-case-input" autoFocus />
           <div className="output-actions">
             <button onClick={onBack} className="btn-secondary">← Back</button>
-            <button onClick={() => setSubmitted(true)} className="btn-primary" disabled={!input.trim()}>Submit</button>
+            <button onClick={() => setShowConfirm(true)} className="btn-primary" disabled={!input.trim()}>Submit</button>
           </div>
+          {showConfirm && <ConfirmModal message="Submit your feedback? This helps us improve the Navigator." onConfirm={() => { setShowConfirm(false); setSubmitted(true); }} onCancel={() => setShowConfirm(false)} />}
         </div>
       );
     }
@@ -443,7 +518,7 @@
       return (
         <footer className="footer">
           <div className="footer-content">
-            <p><a href="https://github.com/Pi-Kay/music-ai-compliance-navigator" target="_blank">GitHub</a><span className="footer-sep">·</span><a href="https://pi-kay.github.io/portfolio/navigator.html" target="_blank">About</a></p>
+            <p><a href="https://github.com/Pi-Kay/music-ai-compliance-navigator" target="_blank" rel="noopener noreferrer">GitHub</a><span className="footer-sep">·</span><a href="https://pi-kay.github.io/portfolio/navigator.html" target="_blank" rel="noopener noreferrer">About</a></p>
             <p className="footer-disclaimer">Not legal advice. Regulations evolve. Consult a professional.</p>
           </div>
         </footer>
@@ -452,20 +527,51 @@
 
     function App() {
       const [currentUseCase, setCurrentUseCase] = useState(null);
+      const [history, setHistory] = useState([]);
       const [currentNode, setCurrentNode] = useState(null);
-      const [path, setPath] = useState([]);
       
-      const reset = () => { setCurrentUseCase(null); setCurrentNode(null); setPath([]); };
-      const selectUseCase = (id) => { setCurrentUseCase(id); setCurrentNode(useCases[id].entry); setPath([useCases[id].entry]); };
-      const handleAnswer = (option) => { setCurrentNode(option.next); setPath([...path, option.next]); };
-      const goBack = () => { if (path.length > 1) { const newPath = path.slice(0, -1); setPath(newPath); setCurrentNode(newPath[newPath.length - 1]); } else { reset(); } };
+      const reset = useCallback(() => { setCurrentUseCase(null); setCurrentNode(null); setHistory([]); }, []);
+      const selectUseCase = useCallback((id) => { setCurrentUseCase(id); setCurrentNode(useCases[id].entry); setHistory([]); }, []);
+      const handleAnswer = useCallback((option) => { setHistory(h => [...h, { node: currentNode, option }]); setCurrentNode(option.next); }, [currentNode]);
+      
+      const goBack = useCallback(() => {
+        if (history.length > 0) {
+          const prev = history[history.length - 1];
+          setCurrentNode(prev.node);
+          setHistory(h => h.slice(0, -1));
+        } else {
+          reset();
+        }
+      }, [history, reset]);
+      
+      const jumpTo = useCallback((stepIndex) => {
+        if (stepIndex === 0) {
+          setCurrentNode(useCases[currentUseCase].entry);
+          setHistory([]);
+        } else {
+          const newHistory = history.slice(0, stepIndex - 1);
+          const targetNode = stepIndex === 1 ? useCases[currentUseCase].entry : history[stepIndex - 2].option.next;
+          setHistory(newHistory);
+          setCurrentNode(targetNode);
+        }
+      }, [currentUseCase, history]);
+      
+      const totalSteps = 3;
+      const currentStep = history.length + 1;
       
       const renderContent = () => {
         if (!currentUseCase) return <UseCaseSelector onSelect={selectUseCase} />;
         const uc = useCases[currentUseCase];
-        if (currentNode === 'edge-case') return <><Breadcrumb useCase={currentUseCase} path={path} onReset={reset} /><EdgeCase onBack={goBack} onReset={reset} /></>;
-        if (currentNode.startsWith('output-')) return <><Breadcrumb useCase={currentUseCase} path={path} onReset={reset} /><Output output={uc.outputs[currentNode]} onBack={goBack} onReset={reset} /></>;
-        return <><Breadcrumb useCase={currentUseCase} path={path} onReset={reset} /><Question question={uc.questions[currentNode]} onAnswer={handleAnswer} /></>;
+        
+        if (currentNode === 'edge-case') {
+          return (<><Breadcrumb useCase={currentUseCase} history={history} onJumpTo={jumpTo} onReset={reset} /><ProgressBar current={totalSteps} total={totalSteps} /><EdgeCase onBack={goBack} onReset={reset} /></>);
+        }
+        
+        if (currentNode.startsWith('output-')) {
+          return (<><Breadcrumb useCase={currentUseCase} history={history} onJumpTo={jumpTo} onReset={reset} /><ProgressBar current={totalSteps} total={totalSteps} /><Output output={uc.outputs[currentNode]} onBack={goBack} onReset={reset} /></>);
+        }
+        
+        return (<><Breadcrumb useCase={currentUseCase} history={history} onJumpTo={jumpTo} onReset={reset} /><ProgressBar current={currentStep} total={totalSteps} /><Question question={uc.questions[currentNode]} onAnswer={handleAnswer} stepNum={currentStep} totalSteps={totalSteps} /></>);
       };
       
       return (
