@@ -13,7 +13,9 @@
 
 Input a use case → get relevant requirements, risks, and action steps, with citations back to the source regulations.
 
-Structured decision tree, not a chatbot — every answer is predictable, verifiable, and traceable to a primary source.
+Structured decision tree, not a chatbot — every answer is predictable, verifiable, and traceable to a primary source. Each decision path ends in a structured output with four consistent fields (requirements, risks, actions, sources), so content is uniform across use cases and easy to update.
+
+Unhandled situations route to a lightweight edge-case log so the tree can grow from real user input rather than guesswork.
 
 ## Use cases (v1)
 
