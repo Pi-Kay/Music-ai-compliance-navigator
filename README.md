@@ -5,6 +5,8 @@
 
 **Status:** V1 live prototype. V2 in development with a collaborating backend engineer.
 
+**Collaboration note:** Active V2 development happens in a private GitLab repo with a collaborating backend engineer. This GitHub repo remains the public reference — stable V1 code, documentation, and decision log. Public updates land here as V2 milestones stabilise.
+
 **Try it:** [pi-kay.github.io/Music-ai-compliance-navigator](https://pi-kay.github.io/Music-ai-compliance-navigator/)
 
 ---
